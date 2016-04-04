@@ -1,0 +1,2 @@
+#!/usr/bin/env bash
+./converter inputformat dmlc nytimes.train nytimes.test outputformat libsvm nytimes.vocab nytimes.libsvm.train nytimes.libsvm.test
