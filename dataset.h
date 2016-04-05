@@ -13,6 +13,8 @@ class DataSet
         void ReadFromLibSVM(std::string vocabFile, std::vector<std::string> files);
         void WriteToLibSVM(std::string vocabFile, std::vector<std::string> files);
 
+        void WriteToUCI(std::string vocabFile, std::vector<std::string> files);
+
     private:   
         std::vector<Corpus> corpora;
         Vocabulary vocab;

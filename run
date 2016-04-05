@@ -1,3 +1,6 @@
 #!/usr/bin/env bash
 #./converter inputformat dmlc nytimes.train nytimes.test outputformat libsvm nytimes.vocab nytimes.libsvm.train nytimes.libsvm.test
-./converter inputformat libsvm nytimes.vocab nytimes.libsvm.train nytimes.libsvm.test outputformat dmlc nytimes.train nytimes.test
+#./converter inputformat libsvm nytimes.vocab nytimes.libsvm.train nytimes.libsvm.test outputformat dmlc nytimes.train nytimes.test
+#./converter inputformat libsvm nytimes.vocab nytimes.libsvm.train nytimes.libsvm.test outputformat uci vocab.txt docword.txt docword_test.txt
+./converter inputformat libsvm pubmed.vocab pubmed.libsvm.train pubmed.libsvm.test outputformat uci vocab.txt docword.txt docword_test.txt
+./converter inputformat libsvm pubmed.vocab pubmed.libsvm.train pubmed.libsvm.test outputformat dmlc pubmed.train pubmed.test

@@ -19,14 +19,19 @@ int main(int argc, char **argv)
         list1.push_back(argv[i]);
 
     DataSet dataset;
-    dataset.ReadFromLibSVM(list1[1],
+    if (list1[0] == "libsvm")
+        dataset.ReadFromLibSVM(list1[1],
             vector<string>(list1.begin()+2, list1.end()));
 
     // list2 = pos+1..end
     for (int i=pos+1; i<argc; i++)
         list2.push_back(argv[i]);
 
-    dataset.WriteToDMLC(vector<string>(list2.begin()+1, list2.end()));
+    if (list2[0] == "dmlc")
+        dataset.WriteToDMLC(vector<string>(list2.begin()+1, list2.end()));
+    else if (list2[0] == "uci")
+        dataset.WriteToUCI(list2[1],
+                vector<string>(list2.begin()+2, list2.end()));
 
     //// list1 = 2..pos-1
     //for (int i=2; i<pos; i++)

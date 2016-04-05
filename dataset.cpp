@@ -1,4 +1,6 @@
+#include <algorithm>
 #include <sstream>
+#include <atomic>
 #include "dataset.h"
 #include "readbuf.h"
 #include "threadbuffer.h"
@@ -136,6 +138,63 @@ void DataSet::WriteToLibSVM(std::string vocabFile, std::vector<std::string> file
 
             #pragma omp critical
             fout << out;
+        }
+    }
+}
+
+void DataSet::WriteToUCI(std::string vocabFile, std::vector<std::string> files)
+{
+    // Write vocabulary
+    ofstream vout(vocabFile);
+    for (int i=0; i<vocab.Size(); i++)
+        vout << vocab.Get(i) << "\n";
+    ThreadBuffer<unordered_map<int, int>> compressedBuffer;
+    // Write files
+    int N = files.size();
+    for (int i=0; i<N; i++) {
+        ofstream fout(files[i]);
+        auto &docs = corpora[i].docs;
+        int M = docs.size();
+        int doc_id = 0;
+
+        // Count unique
+        long long edges = 0;
+        #pragma omp paralle for
+        for (int id=0; id<M; id++) {
+            auto &comp = compressedBuffer.Get();
+            comp.clear();
+            auto &doc = docs[id];
+            for (auto elem: doc) comp[elem]++;
+            if (comp.empty() || doc.size() > 1000)
+                continue;
+            #pragma omp critical
+            edges += comp.size();
+        }
+
+        fout << M << endl << vocab.Size() << endl << edges << endl;
+
+        #pragma omp parallel for
+        for (int id = 0; id < M; id++) {
+            ostringstream sout;
+            auto &doc = docs[id];
+            auto &comp = compressedBuffer.Get();
+            comp.clear();
+            for (auto elem: doc) comp[elem]++;
+            if (comp.empty() || doc.size() > 1000)
+                continue;
+            vector<pair<int, int>> d2;
+            for (auto elem: comp)
+                d2.push_back(make_pair(elem.first, elem.second));
+            sort(d2.begin(), d2.end());
+
+            #pragma omp critical
+            {
+                doc_id++;
+                for (auto elem: d2)
+                    fout << doc_id << " " 
+                        << elem.first+1 << " " 
+                        << elem.second << "\n";
+            }
         }
     }
 }
